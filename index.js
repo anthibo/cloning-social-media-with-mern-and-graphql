@@ -7,19 +7,20 @@ const resolvers = require('./graphql/resolvers')
 
 dotenv.config({ path: 'config.env' });
 
+const DB = process.env.DATABASE.replace('<PASSWORD>', process.env.DB_PASSWORD)
 const server = new ApolloServer({
     typeDefs,
-    resolvers
+    resolvers,
+    context: ({ req }) => ({ req })
 })
 
-const DB = process.env.DATABASE.replace('<PASSWORD>', process.env.DB_PASSWORD)
 mongoose
     .connect(DB, {
         useNewUrlParser: true,
     })
     .then(() => {
         console.log("DB Connection  successful ");
-        return server.listen({ port: process.env.port })
+        return server.listen({ port: process.env.PORT })
     }).then(
         res => {
             console.log(`Server running at ${res.url}`)
